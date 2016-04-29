@@ -20,6 +20,8 @@
 
 #include "veins/modules/application/ieee80211p/BaseWaveApplLayer.h"
 
+using namespace std;
+
 const simsignalwrap_t BaseWaveApplLayer::mobilityStateChangedSignal = simsignalwrap_t(MIXIM_SIGNAL_MOBILITY_CHANGE_NAME);
 
 void BaseWaveApplLayer::initialize(int stage) {
@@ -57,6 +59,31 @@ void BaseWaveApplLayer::initialize(int stage) {
 		}
 
 	}
+}
+
+void BaseWaveApplLayer::sendWSM(WaveShortMessage* wsm, int lengthBits, t_channel channel, int priority, int rcvId, int serial) {
+    wsm->addBitLength(headerLength);
+    wsm->addBitLength(lengthBits);
+    std::string name = wsm->getName();
+    switch (channel) {
+        case type_SCH: wsm->setChannelNumber(Channels::SCH1); break; //will be rewritten at Mac1609_4 to actual Service Channel. This is just so no controlInfo is needed
+        case type_CCH: wsm->setChannelNumber(Channels::CCH); break;
+    }
+    wsm->setPsid(0);
+    wsm->setPriority(priority);
+    wsm->setWsmVersion(1);
+    wsm->setTimestamp(simTime());
+    wsm->setSenderAddress(myId);
+    wsm->setSenderPos(curPosition);
+    wsm->setSerial(serial);
+
+    if (name == "beacon") {
+        DBG << "Creating Beacon with Priority " << priority << " at Applayer at " << wsm->getTimestamp() << std::endl;
+    }
+    if (name == "data") {
+        DBG << "Creating Data with Priority " << priority << " at Applayer at " << wsm->getTimestamp() << std::endl;
+    }
+    BaseWaveApplLayer::sendWSM(wsm);
 }
 
 WaveShortMessage*  BaseWaveApplLayer::prepareWSM(std::string name, int lengthBits, t_channel channel, int priority, int rcvId, int serial) {

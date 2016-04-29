@@ -24,11 +24,15 @@
 
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 
+using namespace std;
+
 using Veins::TraCIMobility;
 
 Define_Module(Veins::TraCIMobility);
 
 const simsignalwrap_t TraCIMobility::parkingStateChangedSignal = simsignalwrap_t(TRACI_SIGNAL_PARKING_CHANGE_NAME);
+const simsignalwrap_t TraCIMobility::accidentStartedSignal = simsignalwrap_t(TRACI_SIGNAL_ACCIDENT_START);
+const simsignalwrap_t TraCIMobility::accidentEndedSignal = simsignalwrap_t(TRACI_SIGNAL_ACCIDENT_END);
 
 namespace {
 	const double MY_INFINITY = (std::numeric_limits<double>::has_infinity ? std::numeric_limits<double>::infinity() : std::numeric_limits<double>::max());
@@ -139,13 +143,16 @@ void TraCIMobility::finish()
 void TraCIMobility::handleSelfMsg(cMessage *msg)
 {
 	if (msg == startAccidentMsg) {
+	    cout << "An Accident Started by Vehicle " << this->external_id << endl;
 		getVehicleCommandInterface()->setSpeed(0);
 		simtime_t accidentDuration = par("accidentDuration");
 		scheduleAt(simTime() + accidentDuration, stopAccidentMsg);
+		emit(accidentStartedSignal, this);
 		accidentCount--;
 	}
 	else if (msg == stopAccidentMsg) {
 		getVehicleCommandInterface()->setSpeed(-1);
+        emit(accidentEndedSignal, this);
 		if (accidentCount > 0) {
 			simtime_t accidentInterval = par("accidentInterval");
 			scheduleAt(simTime() + accidentInterval, startAccidentMsg);

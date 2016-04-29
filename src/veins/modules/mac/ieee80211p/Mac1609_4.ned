@@ -38,7 +38,7 @@ simple Mac1609_4 extends BaseMacLayer
         @class(Mac1609_4);
 
         // cycle between an SCH and the CCH (or stay on CCH all the time)
-        bool useServiceChannel = default(true);
+        bool useServiceChannel = true;
 
         // the service channel this maclayer listens on
         int serviceChannel = default(1);

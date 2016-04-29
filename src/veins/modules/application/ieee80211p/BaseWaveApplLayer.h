@@ -59,7 +59,7 @@ class BaseWaveApplLayer : public BaseApplLayer {
 			SERVICE_PROVIDER = LAST_BASE_APPL_MESSAGE_KIND,
 			SEND_BEACON_EVT
 		};
-
+		void sendWSM(WaveShortMessage* wsm, int lengthBits, t_channel channel, int priority, int rcvId, int serial);
 	protected:
 
 		static const simsignalwrap_t mobilityStateChangedSignal;

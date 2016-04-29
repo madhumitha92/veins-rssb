@@ -22,6 +22,8 @@
 #define VEINS_MOBILITY_TRACI_TRACIMOBILITY_H
 
 #define TRACI_SIGNAL_PARKING_CHANGE_NAME "parkingStateChanged"
+#define TRACI_SIGNAL_ACCIDENT_START "accidentStarted"
+#define TRACI_SIGNAL_ACCIDENT_END "accidentEnded"
 
 #include <string>
 #include <fstream>
@@ -163,6 +165,8 @@ class TraCIMobility : public BaseMobility
 		double last_speed;
 
 		const static simsignalwrap_t parkingStateChangedSignal;
+		const static simsignalwrap_t accidentStartedSignal;
+        const static simsignalwrap_t accidentEndedSignal;
 
 		bool isParking;
 
